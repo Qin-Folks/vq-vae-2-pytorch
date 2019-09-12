@@ -18,8 +18,10 @@ cur_time = utils_io.get_current_time()
 exp_dir = os.path.join('experiments', cur_time)
 if not os.path.exists(exp_dir):
     os.makedirs(exp_dir)
-    samples_dir = os.path.join(exp_dir, 'samples')
-    models_dir = os.path.join(exp_dir, 'models')
+    samples_dir = os.path.join(exp_dir, 'sample')
+    models_dir = os.path.join(exp_dir, 'checkpoint')
+    os.makedirs(samples_dir)
+    os.makedirs(models_dir)
 
 
 def train(epoch, loader, model, optimizer, scheduler, device):
@@ -70,12 +72,15 @@ def train(epoch, loader, model, optimizer, scheduler, device):
             with torch.no_grad():
                 out, _ = model(sample)
 
+            # print('max of sample: ', torch.max(sample), torch.min(sample))
+            # print('min of out: ', torch.max(out), torch.min(out))
             utils.save_image(
                 torch.cat([sample, out], 0),
                 f'experiments/{cur_time}/sample/{str(epoch + 1).zfill(5)}_{str(i).zfill(5)}.png',
                 nrow=sample_size,
-                normalize=True,
+                normalize=False,
                 range=(-1, 1),
+                pad_value=0.5,
             )
 
             model.train()

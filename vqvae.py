@@ -188,11 +188,13 @@ class VQVAE(nn.Module):
             stride=4,
         )
 
+        self.decoder_bias = -2.
+
     def forward(self, input):
         quant_t, quant_b, diff, _, _ = self.encode(input)
         dec = self.decode(quant_t, quant_b)
 
-        return dec, diff
+        return torch.sigmoid(dec + self.decoder_bias), diff
 
     def encode(self, input):
         enc_b = self.enc_b(input)
